@@ -14,7 +14,7 @@ function SignupPage() {
         try {
             setIsLoading(true);
     
-            const response = await fetch('https://ticket-a8ez.onrender.com/user/register', {
+            const response = await fetch('https://event-booking-backend-ivh3.onrender.com/user/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

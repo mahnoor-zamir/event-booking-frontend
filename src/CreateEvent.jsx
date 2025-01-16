@@ -18,7 +18,7 @@ function CreateEvent() {
     try {
       setIsLoading(true);
 
-      const response = await fetch("https://ticket-a8ez.onrender.com/event/create", {
+      const response = await fetch("https://event-booking-backend-ivh3.onrender.com/event/create", {
         method: "POST",
         headers: {
           Authorization: `${token}`,

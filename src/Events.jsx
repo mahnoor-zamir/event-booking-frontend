@@ -36,7 +36,7 @@ function Events() {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("https://ticket-a8ez.onrender.com/event/all", {
+      const response = await fetch("https://event-booking-backend-ivh3.onrender.com/event/all", {
         headers: {
           Authorization: `${token}`, // Include the authentication token
           "Content-Type": "application/json",
@@ -58,7 +58,7 @@ function Events() {
 const handleBookEvent = async (eventId) => {
     try {
       // Fetch the user's booked tickets
-      const response = await fetch(`https://ticket-a8ez.onrender.com/ticket/user`, {
+      const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket/user`, {
         headers: {
           Authorization: `${token}`,
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const handleBookEvent = async (eventId) => {
       if (isAlreadyBooked) {
         setShowAlreadyBookedPopup(true);
       } else {
-        const bookResponse = await fetch(`https://ticket-a8ez.onrender.com/ticket`, {
+        const bookResponse = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket`, {
           method: "POST",
           headers: {
             Authorization: `${token}`,

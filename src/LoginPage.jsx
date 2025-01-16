@@ -13,7 +13,7 @@ function LoginPage() {
         try {
             setIsLoading(true);
     
-            const response = await fetch('https://ticket-a8ez.onrender.com/user/login', {
+            const response = await fetch('https://event-booking-backend-ivh3.onrender.com/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
