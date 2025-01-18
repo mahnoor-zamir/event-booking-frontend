@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './LandingPage';
-import SignupPage from './SignupPage';
-import LoginPage from './LoginPage';
-import Dashboard from './Dashboard';
-import Events from './Events';
-import CreateEvent from './CreateEvent';
+import LandingPage from './LandingPage/LandingPage';
+import SignupPage from './AuthComponent/SignupPage';
+import LoginPage from './AuthComponent/LoginPage';
+import Dashboard from './Dashboard/Dashboard';
+import Events from './Events/Events';
+import CreateEvent from './Events/CreateEvent';
 import './index.css'; 
 function App() {
   return (

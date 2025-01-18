@@ -228,9 +228,9 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card.tsx";
-import { Button } from "./components/ui/button.tsx";
-import { Input } from "./components/ui/input.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
 import { Loader2, User, Mail, Lock } from "lucide-react";
 
 const SignupPage = () => {

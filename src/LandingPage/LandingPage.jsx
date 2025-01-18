@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from "./components/ui/button.tsx";
-import { Card, CardContent } from "./components/ui/card.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Card, CardContent } from "../components/ui/card.tsx";
 import { Calendar, Ticket, Users, ChevronRight } from 'lucide-react';
 
 const LandingPage = () => {
