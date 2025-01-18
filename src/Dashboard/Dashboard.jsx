@@ -344,9 +344,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { Calendar, Clock, MapPin, DollarSign, Edit2, Trash2, User, LogOut, Plus } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card.tsx";
-import { Alert, AlertDescription } from "./components/ui/alert.tsx";
-import { Button } from "./components/ui/button.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
+import { Button } from "../components/ui/button.tsx";
 const Dashboard = () => {
   const [userData, setUserData] = useState({});
   const [userEvents, setUserEvents] = useState([]);
@@ -400,10 +400,7 @@ const Dashboard = () => {
       console.error("Error during event save:", error);
     }
   };
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    history.push("/signup");
-  };
+
 
   const fetchUserEvents = async (token) => {
     try {

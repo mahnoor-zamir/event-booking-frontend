@@ -187,9 +187,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "react-router-dom";
 import { Calendar, MapPin, DollarSign, User, LogOut } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card.tsx";
-import { Alert, AlertDescription } from "./components/ui/alert.tsx";
-import UserProfileModel from "./UserProfileModel";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
+import UserProfileModel from "../UserProfile/UserProfileModel.jsx";
 
 function Events() {
   const [events, setEvents] = useState([]);

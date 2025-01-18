@@ -144,8 +144,8 @@ import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Calendar, MapPin, DollarSign, FileText, Type, User, LogOut } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card.tsx";
-import { Alert, AlertDescription } from "./components/ui/alert.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 
 function CreateEvent() {
   const [formData, setFormData] = useState({
