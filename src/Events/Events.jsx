@@ -1,204 +1,25 @@
-// import React, { useState, useEffect, useRef } from "react";
-// import L from "leaflet";
-// import "leaflet/dist/leaflet.css";
-// import "./Events.css";
-// import { Link } from "react-router-dom";
-// import UserProfileModel from "./UserProfileModel";
-
-// function Events() {
-//   const [events, setEvents] = useState([]);
-//   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-//   const [showAlreadyBookedPopup, setShowAlreadyBookedPopup] = useState(false);
-//   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
-//   const [user, setUser] = useState();
-//   const [selectedEvent, setSelectedEvent] = useState(null);
-//   const mapRef = useRef(null);
-//   const mapInstance = useRef(null);
-
-//   const token = localStorage.getItem("token");
-
-//   useEffect(() => {
-//     fetchEvents();
-//   }, []);
-
-//   useEffect(() => {
-//     if (events.length > 0 && mapRef.current && !mapInstance.current) {
-//       mapInstance.current = L.map(mapRef.current).setView([51.505, -0.09], 13);
-
-//       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-//         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-//       }).addTo(mapInstance.current);
-//     }
-
-//     if (mapInstance.current) {
-//       events.forEach((event) => {
-//         const marker = L.marker([event.latitude, event.longitude]).addTo(mapInstance.current);
-//         marker.on("click", () => {
-//           setSelectedEvent(event);
-//         });
-//       });
-//     }
-//   }, [events]);
-
-//   const openUserProfileModal = () => {
-//     const userData = JSON.parse(localStorage.getItem("user"));
-//     setUser(userData);
-//     setShowUserProfileModal(true);
-//   };
-
-//   const closeUserProfileModal = () => {
-//     setShowUserProfileModal(false);
-//   };
-
-//   function formatDate(dateString) {
-//     const options = { year: "numeric", month: "long", day: "numeric" };
-//     return new Date(dateString).toLocaleDateString(undefined, options);
-//   }
-
-//   const fetchEvents = async () => {
-//     try {
-//       const response = await fetch("https://event-booking-backend-ivh3.onrender.com/event/all", {
-//         headers: {
-//           Authorization: `${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       });
-
-//       if (response.ok) {
-//         const data = await response.json();
-//         setEvents(data);
-//       } else {
-//         console.error("Failed to fetch events.");
-//       }
-//     } catch (error) {
-//       console.error("Error during fetchEvents:", error);
-//     }
-//   };
-
-//   const handleBookEvent = async (eventId) => {
-//     try {
-//       const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket/user`, {
-//         headers: {
-//           Authorization: `${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       });
-
-//       if (!response.ok) {
-//         console.error("Failed to fetch user tickets.");
-//         return;
-//       }
-
-//       const data = await response.json();
-//       const userTickets = data.userTickets;
-
-//       const isAlreadyBooked = userTickets.some((ticket) => ticket.event._id === eventId);
-
-//       if (isAlreadyBooked) {
-//         setShowAlreadyBookedPopup(true);
-//       } else {
-//         const bookResponse = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket`, {
-//           method: "POST",
-//           headers: {
-//             Authorization: `${token}`,
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({ eventId }),
-//         });
-
-//         if (bookResponse.ok) {
-//           setShowSuccessPopup(true);
-//         } else {
-//           console.error("Failed to book event.");
-//         }
-//       }
-//     } catch (error) {
-//       console.error("Error during event booking:", error);
-//     }
-//   };
-
-//   return (
-//     <div className="events">
-//       {/* Navbar */}
-//       <nav className="navbar">
-//         {/* Left side */}
-//         <div className="left">
-//           <Link to={"/dashboard"}><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0NDQ0NDw0ODQ8PDg0NDQ0NDQ8QDQ0NFREYFhURGBUYHSogGBsnGxgWITItMSorMDAuFyszODMtQyotLisBCgoKDg0OGBAQGC0dHyUtKy0tKzAtLS0uLy8tLS0tLS0tLS0tLSsvLS0tLSsrLS0tLS0tLi0vLS8tLSstLS0tK//AABEIAOEA4QMBIgACEQEDEQH/xAAbAAADAAMBAQAAAAAAAAAAAAAAAQIEBQYDB//EAEgQAAICAgECBAIGBQUNCQAAAAECAAMEEQUSIQYTMUFRYRQiMnGBkQczQlKhFSNyc6IlQ1RigoOSlLHBwtLTJjREU1VjZXSj/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QAMxEAAgIBAgQDBwIGAwAAAAAAAAECEQMhMRJBUYEEYdETInGRscHwoeEFFDJCYrIkM1L/2gAMAwEAAhEDEQA/APq8cI5AEcI4ARwlQBRwjlAo4RwBRxwgC1DUcNQBahqPUIAopUIBMUqKQCilyYBMUqKATCOKATFKigChHCAOOEYgBHCOAEcJUoFHCOAEI44AoRx6gExxwgChHCATCVqKATCVFAJhHFAJhHFAEZMqKQExSojAFCEIBUcUoQAjhKgBCEcoCOEcAI4RwBRxw1AFHHNL4n8QJgJWq1tk5eQxqwcKs/zmRd/wovqzHsBANzFOf8Mc/Ze9mDm1rjcljqGvpQnyb6j2XJpJ+1WfT4qexnRQ1QJhHqEAmKVFAJilRQCYRxGATFLkyAmKUZMAUI4QBxiIShACVEIxAHHFKlARwEcAI4RwAjhOf5pvMt8k8ucI+oow1x/pJX4sbFdvyVfxhFSb2Og/h858+wOQIpyPEDILsnOt+hcPS50tWIbClK7/AGVYhrnP7o+UzW47kWS6vB51cx/LZTjcjVS7AMCN+ZSFdD39SD901/Pcdfj8XweMydNlNN+M6qQQMr+SchF7jsdtsD5sJpIqi+JRegXZN2fgtlIyNyvEEZNN9SlUzcdk8waX1CXVhlK+zqR7Tu+Nza8rHoya+9d9Vd1fx6HUMP8AbOE/RlW3m2bUkDjMcP8"></img></Link>
-//         </div>
-//         {/* Right side */}
-//         <div className="right">
-//           <button className="events-button">Events</button>
-//           <Link to="/create"> <button className="events-button">Create Events</button></Link>
-//           <button onClick={openUserProfileModal} className="profile-button">My Profile</button>
-//         </div>
-//       </nav>
-
-//       {/* Map */}
-//       <div id="map" ref={mapRef} style={{ height: "500px", width: "100%" }}></div>
-
-//       {/* Booking window */}
-//       {selectedEvent && (
-//         <div className="booking-window">
-//           <h2>{selectedEvent.title}</h2>
-//           <p>{selectedEvent.description}</p>
-//           <p>Date: {formatDate(selectedEvent.date)}</p>
-//           <p>Venue: {selectedEvent.venue}</p>
-//           <p>Price: ${selectedEvent.price}</p>
-//           <button
-//             className="book-button"
-//             onClick={() => handleBookEvent(selectedEvent._id)}
-//           >
-//             Book
-//           </button>
-//           <button onClick={() => setSelectedEvent(null)}>Close</button>
-//         </div>
-//       )}
-
-//       {/* Success Pop-up */}
-//       {showSuccessPopup && (
-//         <div className="popup success-popup">
-//           <p>Event booked successfully!</p>
-//           <button onClick={() => setShowSuccessPopup(false)}>Close</button>
-//         </div>
-//       )}
-
-//       {/* Already Booked Pop-up */}
-//       {showAlreadyBookedPopup && (
-//         <div className="popup error-popup">
-//           <p>Event is already booked!</p>
-//           <button onClick={() => setShowAlreadyBookedPopup(false)}>Close</button>
-//         </div>
-//       )}
-
-//       {showUserProfileModal && (
-//         <UserProfileModel
-//           user={user}
-//           onClose={closeUserProfileModal}
-//         />
-//       )}
-//     </div>
-//   );
-// }
-
-// export default Events;
-
 import React, { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "react-router-dom"; 
-import { Calendar, MapPin, DollarSign, User, LogOut } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, User, LogOut, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import UserProfileModel from "../UserProfile/UserProfileModel.jsx";
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 function Events() {
   const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showAlreadyBookedPopup, setShowAlreadyBookedPopup] = useState(false);
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [user, setUser] = useState();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [tags, setTags] = useState([]);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
 
@@ -215,11 +36,18 @@ function Events() {
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(mapInstance.current);
-    }
 
-    if (mapInstance.current) {
+      const icon = L.icon({
+        iconUrl: markerIcon,
+        shadowUrl: markerShadow,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
       events.forEach((event) => {
-        const marker = L.marker([event.latitude, event.longitude]).addTo(mapInstance.current);
+        const marker = L.marker([event.latitude, event.longitude], { icon }).addTo(mapInstance.current);
         marker.on("click", () => {
           setSelectedEvent(event);
         });
@@ -254,6 +82,8 @@ function Events() {
       if (response.ok) {
         const data = await response.json();
         setEvents(data);
+        setFilteredEvents(data);
+        setTags([...new Set(data.map(event => event.tag))]);
       } else {
         console.error("Failed to fetch events.");
       }
@@ -302,6 +132,17 @@ function Events() {
     } catch (error) {
       console.error("Error during event booking:", error);
     }
+  };
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = events.filter(event => 
+      event.title.toLowerCase().includes(query) ||
+      event.description.toLowerCase().includes(query) ||
+      event.tag.toLowerCase().includes(query)
+    );
+    setFilteredEvents(filtered);
   };
 
   return (
@@ -384,8 +225,20 @@ function Events() {
               <Calendar className="w-6 h-6 mr-2 text-blue-600" />
               Upcoming Events
             </h2>
+            <div className="mb-6">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  placeholder="Search events..."
+                />
+                <Search className="absolute right-3 top-3 w-5 h-5 text-slate-400" />
+              </div>
+            </div>
             <div className="space-y-6">
-              {events.length === 0 ? (
+              {filteredEvents.length === 0 ? (
                 <Card className="border-dashed">
                   <CardContent className="py-12">
                     <div className="text-center">
@@ -395,7 +248,7 @@ function Events() {
                   </CardContent>
                 </Card>
               ) : (
-                events.map((event) => (
+                filteredEvents.map((event) => (
                   <Card key={event._id} className="overflow-hidden hover:shadow-lg transition-all duration-200">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -417,6 +270,9 @@ function Events() {
                           <MapPin className="w-4 h-4 mr-2 text-blue-600" />
                           <span>{event.venue || "Venue not set"}</span>
                         </div>
+                        <div className="flex items-center text-slate-500 bg-slate-50 p-3 rounded-xl">
+                          <span>{event.tag || "No tag"}</span>
+                        </div>
                       </div>
                       
                       <div className="mt-4 flex items-center justify-between bg-blue-50 p-3 rounded-xl">
@@ -426,9 +282,10 @@ function Events() {
                         </div>
                         <button
                           onClick={() => handleBookEvent(event._id)}
-                          className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                          className={`px-4 py-2 rounded-xl ${event.ticketsAvailable ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
+                          disabled={!event.ticketsAvailable}
                         >
-                          Book
+                          {event.ticketsAvailable ? 'Book' : 'Full'}
                         </button>
                       </div>
                     </CardContent>
@@ -441,32 +298,7 @@ function Events() {
       </div>
 
       {/* Booking window */}
-      {/* {selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end p-4 z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full ">
-            <h2 className="text-2xl font-semibold text-slate-800 mb-4">{selectedEvent.title}</h2>
-            <p className="text-slate-600 mb-4">{selectedEvent.description}</p>
-            <p className="text-slate-600 mb-4">Date: {formatDate(selectedEvent.date)}</p>
-            <p className="text-slate-600 mb-4">Venue: {selectedEvent.venue}</p>
-            <p className="text-slate-600 mb-4">Price: ${selectedEvent.price}</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => handleBookEvent(selectedEvent._id)}
-                className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              >
-                Book
-              </button>
-              <button
-                onClick={() => setSelectedEvent(null)}
-                className="px-4 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
-{selectedEvent && (
+      {selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end pr-5 z-50">
           <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 max-w-md w-full">
             <CardContent className="p-6">
