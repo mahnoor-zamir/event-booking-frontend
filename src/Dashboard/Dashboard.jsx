@@ -122,7 +122,7 @@ const Dashboard = () => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-const handleDeleteClick = async (eventId) => {
+  const handleDeleteClick = async (eventId) => {
     try {
       const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/event/${eventId}`, {
         method: "DELETE",
@@ -181,7 +181,7 @@ const handleDeleteClick = async (eventId) => {
               BookmyEvent
             </span>
           </Link>
-          
+
           <div className="flex items-center space-x-6">
             <Link to="/events">
               <button className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
@@ -194,7 +194,7 @@ const handleDeleteClick = async (eventId) => {
               </button>
             </Link>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors duration-200"
               >
@@ -204,18 +204,18 @@ const handleDeleteClick = async (eventId) => {
                   </span>
                 </div>
               </button>
-              
+
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-slate-200">
-                  <button 
+                  <button
                     onClick={() => setShowUserProfileModal(true)}
                     className="flex items-center space-x-2 px-4 py-2 w-full text-left hover:bg-slate-50"
                   >
                     <User className="w-4 h-4 text-slate-500" />
                     <span>Profile</span>
                   </button>
-                  <button 
-                    onClick={() => {/* handle logout */}}
+                  <button
+                    onClick={() => {/* handle logout */ }}
                     className="flex items-center space-x-2 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50"
                   >
                     <LogOut className="w-4 h-4" />
@@ -253,7 +253,7 @@ const handleDeleteClick = async (eventId) => {
                 </Card>
               ) : (
                 userEvents.map((event) => (
-                  <EventCard 
+                  <EventCard
                     key={event.id}
                     event={event}
                     isEditing={event === editingEvent}
@@ -309,7 +309,7 @@ const handleDeleteClick = async (eventId) => {
 };
 
 // Helper component for event cards
-const EventCard = ({ event, isEditing, editedFields, onEdit, onFieldChange, onDelete, onSave,formatDate }) => {
+const EventCard = ({ event, isEditing, editedFields, onEdit, onFieldChange, onDelete, onSave, formatDate }) => {
   if (isEditing) {
     return (
       <Card className="border-slate-200">
@@ -341,10 +341,10 @@ const EventCard = ({ event, isEditing, editedFields, onEdit, onFieldChange, onDe
               placeholder="Venue"
             />
           </div>
-           
-            <button onClick={onSave} className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">
-                Save
-              </button>
+
+          <button onClick={onSave} className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">
+            Save
+          </button>
         </CardContent>
       </Card>
     );
@@ -372,11 +372,11 @@ const EventCard = ({ event, isEditing, editedFields, onEdit, onFieldChange, onDe
             </button>
           </div>
         </div>
-        
+
         <p className="text-slate-600 mb-4">
           {event.description || "No description available"}
         </p>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center text-slate-500 bg-slate-50 p-3 rounded-xl">
             <Calendar className="w-4 h-4 mr-2 text-blue-600" />
@@ -387,14 +387,14 @@ const EventCard = ({ event, isEditing, editedFields, onEdit, onFieldChange, onDe
             <span>{event.venue || "Venue not set"}</span>
           </div>
         </div>
-        
+
         <div className="mt-4 flex items-center justify-between bg-blue-50 p-3 rounded-xl">
           <div className="flex items-center text-blue-600">
             <DollarSign className="w-4 h-4 mr-1" />
-            <span className="font-medium">${event.price || "0"}</span>
+            <span className="font-medium">{event.price || "0"}</span>
           </div>
           <div className="text-sm text-blue-600">
-            {event.tickets_available || 0} tickets available
+            {event.ticketAvailable || 0} tickets available
           </div>
         </div>
       </CardContent>
@@ -411,18 +411,18 @@ const ScheduledEventCard = ({ ticket, onCancel, formatDate }) => (
           {ticket.event?.title || "Untitled Event"}
         </h3>
       </div>
-      
+
       <p className="text-slate-600 mb-4">
         {ticket.event?.description || "No description available"}
       </p>
-      
+
       <div className="flex items-center text-slate-500 bg-slate-50 p-3 rounded-xl mb-4">
         <Calendar className="w-4 h-4 mr-2 text-blue-600" />
         <span>
           {ticket.event?.date ? formatDate(ticket.event.date) : "Date not set"}
         </span>
       </div>
-      
+
       <button
         onClick={onCancel}
         className="w-full px-4 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
