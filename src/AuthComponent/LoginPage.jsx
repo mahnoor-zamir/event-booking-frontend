@@ -24,14 +24,14 @@ const LoginPage = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                const { token, role } = data;
+                const { token, role, userId } = data;
                 const username = email.split('@')[0];
 
                 localStorage.setItem('token', token);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', email);
                 localStorage.setItem('role', role);
-                
+                localStorage.setItem('userId', userId);
                 setTimeout(() => {
                     window.location.href = '/dashboard';
                 }, 2000);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
-import { Calendar, Clock, MapPin, DollarSign, Edit2, Trash2, User, LogOut, Plus } from 'lucide-react';
+import { Link, useNavigate  } from "react-router-dom";
+import { Calendar, Clock, MapPin, DollarSign, Edit2, Trash2, User, LogOut, Plus, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -13,17 +13,68 @@ const Dashboard = () => {
   const [editedFields, setEditedFields] = useState({});
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
-  // Keeping your existing fetch functions and handlers
-  const fetchUserData = async (token) => {
+  const UserProfileModal = ({ isOpen, onClose, userData }) => {
+    if (!isOpen) return null;
+  
+    return (
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl p-6 w-full max-w-md">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold">User Profile</h2>
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                <span className="text-white text-2xl font-medium">
+                  {userData.username?.[0]?.toUpperCase() || 'U'}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-xl font-medium">{userData.username}</h3>
+                <p className="text-slate-500">{userData.email}</p>
+              </div>
+            </div>
+            
+            <div className="pt-4">
+              <h4 className="text-sm font-medium text-slate-500 mb-2">Account Details</h4>
+              <div className="space-y-3">
+                <div className="bg-slate-50 p-3 rounded-lg">
+                  <div className="text-sm text-slate-500">Email</div>
+                  <div>{userData.email || "guest@evenhub.com"}</div>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-lg">
+                  <div className="text-sm text-slate-500">Name</div>
+                  <div>{userData.username || "Guest"}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button
+            onClick={onClose}
+            className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+    const fetchUserData = async (token) => {
     try {
-      const response = await fetch("https://event-booking-backend-ivh3.onrender.com/user", {
+      const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/user/${userId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `${token}`,
         },
       });
-      
       if (response.ok) {
         const data = await response.json();
         setUserData(data);
@@ -146,6 +197,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   const handleCancelEventClick = async (eventId) => {
     try {
       const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket/${eventId}`, {
@@ -195,40 +250,47 @@ const Dashboard = () => {
               </button>
             </Link>
             <div className="relative">
-              <button
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-              >
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                  <span className="text-white font-medium">
-                    {userData.name?.[0]?.toUpperCase() || 'U'}
-                  </span>
-                </div>
-              </button>
-
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-slate-200">
-                  <button
-                    onClick={() => setShowUserProfileModal(true)}
-                    className="flex items-center space-x-2 px-4 py-2 w-full text-left hover:bg-slate-50"
-                  >
-                    <User className="w-4 h-4 text-slate-500" />
-                    <span>Profile</span>
-                  </button>
-                  <button
-                    onClick={() => {/* handle logout */ }}
-                    className="flex items-center space-x-2 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+          >
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+              <span className="text-white font-medium">
+                {userData.username?.[0]?.toUpperCase() || 'U'}
+              </span>
             </div>
+          </button>
+
+          {showProfileMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-slate-200">
+              <button
+                onClick={() => {
+                  setShowUserProfileModal(true);
+                  setShowProfileMenu(false);
+                }}
+                className="flex items-center space-x-2 px-4 py-2 w-full text-left hover:bg-slate-50"
+              >
+                <User className="w-4 h-4 text-slate-500" />
+                <span>Profile</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
           </div>
         </div>
       </nav>
-
+      <UserProfileModal
+        isOpen={showUserProfileModal}
+        onClose={() => setShowUserProfileModal(false)}
+        userData={userData}
+      />
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* My Events Section */}
