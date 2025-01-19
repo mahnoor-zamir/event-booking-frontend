@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import { Calendar, MapPin, DollarSign, User, LogOut, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
@@ -94,41 +94,60 @@ function Events() {
 
   const handleBookEvent = async (eventId) => {
     try {
-      const response = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket/user`, {
+      const bookResponse = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket`, {
+        method: "POST",
         headers: {
           Authorization: `${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ eventId }),
       });
-
-      if (!response.ok) {
-        console.error("Failed to fetch user tickets.");
+  
+      const responseData = await bookResponse.json();
+  
+      if (!bookResponse.ok) {
+        if (responseData.error === 'No tickets available.') {
+          setShowAlreadyBookedPopup(true);
+          // Update local state to reflect no tickets available
+          setEvents(prevEvents => 
+            prevEvents.map(event => 
+              event._id === eventId ? { ...event, ticketAvailable: 0 } : event
+            )
+          );
+          setFilteredEvents(prevEvents => 
+            prevEvents.map(event => 
+              event._id === eventId ? { ...event, ticketAvailable: 0 } : event
+            )
+          );
+        } else {
+          console.error("Failed to book event:", responseData.error);
+        }
         return;
       }
-
-      const data = await response.json();
-      const userTickets = data.userTickets;
-
-      const isAlreadyBooked = userTickets.some((ticket) => ticket.event._id === eventId);
-
-      if (isAlreadyBooked) {
-        setShowAlreadyBookedPopup(true);
-      } else {
-        const bookResponse = await fetch(`https://event-booking-backend-ivh3.onrender.com/ticket`, {
-          method: "POST",
-          headers: {
-            Authorization: `${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ eventId }),
-        });
-
-        if (bookResponse.ok) {
-          setShowSuccessPopup(true);
-        } else {
-          console.error("Failed to book event.");
-        }
-      }
+  
+      // Booking successful
+      setShowSuccessPopup(true);
+      
+      // Update local state to decrease ticket count
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event._id === eventId ? { 
+            ...event, 
+            ticketAvailable: Math.max(0, event.ticketAvailable - 1) 
+          } : event
+        )
+      );
+      setFilteredEvents(prevEvents => 
+        prevEvents.map(event => 
+          event._id === eventId ? { 
+            ...event, 
+            ticketAvailable: Math.max(0, event.ticketAvailable - 1) 
+          } : event
+        )
+      );
+      
+      // Close booking window if open
+      setSelectedEvent(null);
     } catch (error) {
       console.error("Error during event booking:", error);
     }
@@ -137,7 +156,7 @@ function Events() {
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    const filtered = events.filter(event => 
+    const filtered = events.filter(event =>
       event.title.toLowerCase().includes(query) ||
       event.description.toLowerCase().includes(query) ||
       event.tag.toLowerCase().includes(query)
@@ -158,7 +177,7 @@ function Events() {
               BookmyEvent
             </span>
           </Link>
-          
+
           <div className="flex items-center space-x-6">
             <Link to="/events">
               <button className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200">
@@ -171,7 +190,7 @@ function Events() {
               </button>
             </Link>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors duration-200"
               >
@@ -181,18 +200,18 @@ function Events() {
                   </span>
                 </div>
               </button>
-              
+
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-slate-200">
-                  <button 
+                  <button
                     onClick={openUserProfileModal}
                     className="flex items-center space-x-2 px-4 py-2 w-full text-left hover:bg-slate-50"
                   >
                     <User className="w-4 h-4 text-slate-500" />
                     <span>Profile</span>
                   </button>
-                  <button 
-                    onClick={() => {/* handle logout */}}
+                  <button
+                    onClick={() => {/* handle logout */ }}
                     className="flex items-center space-x-2 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50"
                   >
                     <LogOut className="w-4 h-4" />
@@ -256,11 +275,11 @@ function Events() {
                           {event.title || "Untitled Event"}
                         </h3>
                       </div>
-                      
+
                       <p className="text-slate-600 mb-4">
                         {event.description || "No description available"}
                       </p>
-                      
+
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex items-center text-slate-500 bg-slate-50 p-3 rounded-xl">
                           <Calendar className="w-4 h-4 mr-2 text-blue-600" />
@@ -274,18 +293,28 @@ function Events() {
                           <span>{event.tag || "No tag"}</span>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4 flex items-center justify-between bg-blue-50 p-3 rounded-xl">
                         <div className="flex items-center text-blue-600">
                           <DollarSign className="w-4 h-4 mr-1" />
                           <span className="font-medium">{event.price || "0"}</span>
                         </div>
-                        <button
+                        {/* <button
                           onClick={() => handleBookEvent(event._id)}
                           className={`px-4 py-2 rounded-xl ${event.ticketAvailable ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
                           disabled={!event.ticketAvailable}
                         >
                           {event.ticketAvailable ? 'Book' : 'Full'}
+                        </button> */}
+                        <button
+                          onClick={() => handleBookEvent(event._id)}
+                          className={`px-4 py-2 rounded-xl ${event.ticketAvailable > 0
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                            }`}
+                          disabled={event.ticketAvailable <= 0}
+                        >
+                          {event.ticketAvailable > 0 ? `Book (${event.ticketAvailable} left)` : 'Sold Out'}
                         </button>
                       </div>
                     </CardContent>
@@ -333,7 +362,7 @@ function Events() {
                   onClick={() => setSelectedEvent(null)}
                   className="px-4 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                 >
-                Close
+                  Close
                 </button>
               </div>
             </CardContent>
