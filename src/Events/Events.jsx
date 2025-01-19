@@ -278,14 +278,14 @@ function Events() {
                       <div className="mt-4 flex items-center justify-between bg-blue-50 p-3 rounded-xl">
                         <div className="flex items-center text-blue-600">
                           <DollarSign className="w-4 h-4 mr-1" />
-                          <span className="font-medium">${event.price || "0"}</span>
+                          <span className="font-medium">{event.price || "0"}</span>
                         </div>
                         <button
                           onClick={() => handleBookEvent(event._id)}
-                          className={`px-4 py-2 rounded-xl ${event.ticketsAvailable ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
-                          disabled={!event.ticketsAvailable}
+                          className={`px-4 py-2 rounded-xl ${event.ticketAvailable ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
+                          disabled={!event.ticketAvailable}
                         >
-                          {event.ticketsAvailable ? 'Book' : 'Full'}
+                          {event.ticketAvailable ? 'Book' : 'Full'}
                         </button>
                       </div>
                     </CardContent>
